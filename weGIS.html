@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>OpenLayers Map Controls</title>
+
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/theme/default/style.css" type="text/css">
+        <style>body, html, #map { width: 99%; height: 99%; }</style>
+
+        <script src="http://cdnjs.cloudflare.com/ajax/libs/openlayers/2.13.1/OpenLayers.js"></script>
+    </head>
+    <body>
+        <div id="map"></div>
+        <script type="text/javascript">
+        // init the map object with a OSM base layer.
+        var map = new OpenLayers.Map('map', {
+                layers: [
+                    new OpenLayers.Layer.OSM('OSM'),
+                    new OpenLayers.Layer.OSM('OpenCycleMap',
+                    ['http://a.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png',
+                    'http://b.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png',
+                    'http://c.tile.opencyclemap.org/cycle/${z}/${x}/${y}.png'])
+                    ],
+                controls: [
+                    new OpenLayers.Control.Navigation(),
+                    new OpenLayers.Control.Attribution(),
+                    new OpenLayers.Control.PanZoomBar(),
+                    new OpenLayers.Control.LayerSwitcher({
+                        'ascending': true
+                    }),
+                    new OpenLayers.Control.ScaleLine(),
+                    new OpenLayers.Control.MousePosition(),
+                    
+                    new OpenLayers.Control.KeyboardDefaults(),
+                   
+                ],
+                center: new OpenLayers.LonLat(8.39, 48.999).transform('EPSG:4326', 'EPSG:3857'),
+                zoom: 13
+
+           
+            });
+     
+
+
+
+        // we will use this vector layer to demonstrate editing vector features
+        var editingLayer = new OpenLayers.Layer.Vector("Editing");
+        map.addLayers([editingLayer]);
+        //var snapVertex = {methods: ['vertex', 'edge'], layers: [vectors]};
+
+        
+
+
+
+
+
+
+
+        // init the editing toolbar and a basic selection control
+        var editingToolbar = new OpenLayers.Control.EditingToolbar(editingLayer);
+        var selectCtrl = new OpenLayers.Control.SelectFeature(
+                editingLayer, {
+                //hover: true
+                eventListeners:{
+                    featurehighlighted: function overlay_delete(event){
+                        var feature = event.feature;
+
+                        //if(confirm(strConfirmMessage)){
+                            editingLayer.removeFeatures([feature]);
+                        //}
+                    }
+                }
+            });
+        map.addControls([editingToolbar, selectCtrl]);
+        selectCtrl.activate();
+        </script>
+    </body>
+</html>
